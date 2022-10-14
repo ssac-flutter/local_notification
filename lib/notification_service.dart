@@ -46,7 +46,6 @@ class NotificationService {
 
   Future<void> showNotification(int id, String title, String body,
       {String? payload}) async {
-
     if (await permissionNotification) {
       flutterLocalNotificationsPlugin.show(
         id,
