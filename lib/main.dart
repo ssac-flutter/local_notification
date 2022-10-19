@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_local_notification/push_service.dart';
 import 'firebase_options.dart';
 
 import 'notification_service.dart';
@@ -34,8 +35,12 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  // token
   final fcmToken = await FirebaseMessaging.instance.getToken();
   log(fcmToken.toString());
+
+  // topic 등록
+  await FirebaseMessaging.instance.subscribeToTopic('test');
 
   runApp(const MyApp());
 }
@@ -78,7 +83,7 @@ class _AppState extends State<App> {
         print('Message also contained a notification: ${message.notification}');
       }
 
-      notification.showNotification(1, 'test', 'test');
+      notification.showNotification(1, message.data['title'], message.data['body']);
     });
   }
 
@@ -94,16 +99,25 @@ class _AppState extends State<App> {
       appBar: AppBar(
         title: const Text('Notification'),
       ),
-      body: Column(
-        children: [
-          TextButton(
-            onPressed: () {
-              notification.showNotification(1, 'title', 'body');
-              // notification.addScheduledNotification(id: 1, alarmTimeStr: '16:39', title: 'title', body: 'body');
-            },
-            child: const Text('Notification'),
-          ),
-        ],
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextButton(
+              onPressed: () {
+                notification.showNotification(1, 'title', 'body');
+                // notification.addScheduledNotification(id: 1, alarmTimeStr: '16:39', title: 'title', body: 'body');
+              },
+              child: const Text('Local Notification'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                PushService.sendPush('제모오옥!!!!', '바아디이이!!!!');
+              },
+              child: const Text('FCM 발송'),
+            ),
+          ],
+        ),
       ),
     );
   }
